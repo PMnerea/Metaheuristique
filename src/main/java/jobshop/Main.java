@@ -21,6 +21,7 @@ import net.sourceforge.argparse4j.inf.Namespace;
  */
 public class Main {
 
+    // TODO - Add feature to save collected data to a specific file -> file argument
     public static void main(String[] args) {
         // configure the argument parser
         ArgumentParser parser = ArgumentParsers.newFor("jsp-solver").build()

@@ -22,6 +22,7 @@ public class DescentSolver implements Solver {
         this.baseSolver = baseSolver;
     }
 
+    // TODO - Implement a descent solver using Nowicki and Smutnicki neighborhood
     @Override
     public Optional<Schedule> solve(Instance instance, long deadline) {
         throw new UnsupportedOperationException();
