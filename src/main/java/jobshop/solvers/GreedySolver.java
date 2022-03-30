@@ -36,7 +36,7 @@ public class GreedySolver implements Solver {
      * @param job
      * @param instance
      * @param jobsLastDoneTasks Task ArrayList for every last finished tasks for each job
-     * @return
+     * @return Returns the remaining processing time for a specific job
      */
     public int computeRemainingTime(int job, Instance instance, ArrayList<Task> jobsLastDoneTasks) {
         int lastDoneTask = jobsLastDoneTasks.get(job).task;
@@ -63,15 +63,19 @@ public class GreedySolver implements Solver {
         return doableTasks;
     }
 
-    // FIXME - No return needed in out arraylist
-    public ArrayList<Task> UpdateDoableTasks(Instance instance, ArrayList<Task> doableTasks, Task lastDoneTask) {
+    /**
+     *
+     * @param instance
+     * @param doableTasks
+     * @param lastDoneTask
+     */
+    public void UpdateDoableTasks(Instance instance, ArrayList<Task> doableTasks, Task lastDoneTask) {
         if (lastDoneTask.task < instance.numTasks) {
             Task newTask = new Task(lastDoneTask.job, lastDoneTask.task+1);
             doableTasks.set(lastDoneTask.job, newTask);
         } else {
             doableTasks.remove(lastDoneTask.job);
         }
-        return doableTasks;
     }
 
     /**
@@ -96,7 +100,7 @@ public class GreedySolver implements Solver {
     /**
      * @param instance    The current instance
      * @param doableTasks Task ArrayList of doable tasks
-     * @return Shortest processing time task in the set
+     * @return Longest processing time task
      */
     public Task LPTTask(Instance instance, ArrayList<Task> doableTasks) {
         int max = Integer.MIN_VALUE;
@@ -116,7 +120,7 @@ public class GreedySolver implements Solver {
      * @param instance          The current instance
      * @param doableTasks       Task ArrayList of doable tasks
      * @param jobsLastDoneTasks Task ArrayList for every last finished tasks for each job
-     * @return Longest remaining processing time job's task is returned
+     * @return Shortest remaining processing time job's task is returned
      */
     public Task SRPTTask(Instance instance, ArrayList<Task> doableTasks, ArrayList<Task> jobsLastDoneTasks) {
         // Compute job remaining time
@@ -171,6 +175,22 @@ public class GreedySolver implements Solver {
 
         while (doableTasks.size() != 0) {
             // Choisir tache appropriée
+            switch (this.priority){
+                case SPT:
+                    currentTask = SPTTask(instance,doableTasks);
+                    break;
+                case LRPT:
+                    currentTask = LRPTTask(instance,doableTasks,lastDoneTasks);
+                    break;
+                case LPT:
+                    currentTask = LPTTask(instance,doableTasks);
+                    break;
+                case SRPT:
+                    currentTask = SRPTTask(instance,doableTasks,lastDoneTasks);
+                default:
+                    // lots of things, hopefully not
+
+            }
             currentTask = SPTTask(instance, doableTasks);
             // currentTask = LRPTTask(instance, doableTasks);
 
@@ -179,9 +199,9 @@ public class GreedySolver implements Solver {
             ro.addTaskToMachine(machine, currentTask);
 
             // mettre a jour l'ensemble des taches faisables
-            doableTasks = UpdateDoableTasks(instance, doableTasks, currentTask);
+            UpdateDoableTasks(instance, doableTasks, currentTask);
             // Mettre a jour les taches deja faites
-            //lastDoneTasks.set(lastDoneTask.job, lastDoneTask);
+            lastDoneTasks.set(currentTask.job,currentTask);
         }
 
         throw new UnsupportedOperationException();

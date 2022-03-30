@@ -17,6 +17,8 @@ import java.util.Optional;
 
 public class GreedySolverTests {
 
+    // TODO - Create tests for each remaining priority
+
     @Test
     public void testInitLastDoneTasks() throws IOException {
         Instance instance = Instance.fromFile(Paths.get("instances/aaa1"));
@@ -43,17 +45,19 @@ public class GreedySolverTests {
     }
 
     @Test
-    /// TODO - Finish this function
-    public void testUpdateLastDone() throws IOException {
+
+    public void testUpdateDoable() throws IOException {
         Instance instance = Instance.fromFile(Paths.get("instances/aaa1"));
 
         GreedySolver  solverSPT = new GreedySolver(GreedySolver.Priority.SPT);
 
         ArrayList<Task> resultDoableTasks = solverSPT.InitDoableTasks(instance);
-        ArrayList<Task> resultLastDone = solverSPT.InitLastDoneTasks(instance);
+        ArrayList<Task> expectedDoableTasks = solverSPT.InitDoableTasks(instance);
+        expectedDoableTasks.set(0,new Task(0,1));
 
-        // Job 1 Task 1
-        resultLastDone = solverSPT.UpdateDoableTasks(instance,resultDoableTasks,new Task(0,0));
+        solverSPT.UpdateDoableTasks(instance,resultDoableTasks,new Task(0,0));
+
+        Assert.assertEquals(expectedDoableTasks,resultDoableTasks);
 
     }
 
