@@ -3,7 +3,7 @@ package jobshop.solvers;
 import jobshop.Instance;
 import jobshop.encodings.Schedule;
 import jobshop.encodings.Task;
-
+import jobshop.encodings.ResourceOrder;
 import java.util.ArrayList;
 import java.util.Optional;
 
@@ -55,6 +55,17 @@ public class GreedySolver implements Solver {
         return doableTasks;
     }
 
+    public ArrayList<Task> UpdateDoableTasks(Instance instance, ArrayList<Task> doableTasks, Task task) {
+        if (task.task < instance.numTasks) {
+            Task newTask = new Task(task.job, task.task+1);
+            doableTasks.set(task.job, newTask);
+            return doableTasks;
+        } else {
+            doableTasks.remove(task.job);
+            return doableTasks;
+        }
+    }
+
     /**
      * @param instance    The current instance
      * @param doableTasks Task ArrayList of doable tasks
@@ -101,12 +112,25 @@ public class GreedySolver implements Solver {
     @Override
     public Optional<Schedule> solve(Instance instance, long deadline) {
         // Solution is represented by a resource order object
-
+        Task currentTask;
+        ResourceOrder ro = new ResourceOrder(instance);
+        int machine;
         // Set of tasks -> 1 task for each job
         ArrayList<Task> doableTasks = InitDoableTasks(instance);
         while (doableTasks.size() != 0) {
             // TODO - Find a way to use specific choice function -> switch?
             // Add everything with index for doableTasks and last done tasks
+
+            // Choisir tache appropriée
+            currentTask = SPTTask(instance, doableTasks);
+            // currentTask = LRPTTask(instance, doableTasks);
+
+            // Assigner cette tache correspondante dans le ressource order
+            machine = instance.machine(currentTask);
+            ro.addTaskToMachine(machine, currentTask);
+
+            // mettre a jour l'ensemble des taches faisables
+
         }
 
         throw new UnsupportedOperationException();
