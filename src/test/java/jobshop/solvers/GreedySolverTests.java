@@ -43,6 +43,21 @@ public class GreedySolverTests {
     }
 
     @Test
+    /// TODO - Finish this function
+    public void testUpdateLastDone() throws IOException {
+        Instance instance = Instance.fromFile(Paths.get("instances/aaa1"));
+
+        GreedySolver  solverSPT = new GreedySolver(GreedySolver.Priority.SPT);
+
+        ArrayList<Task> resultDoableTasks = solverSPT.InitDoableTasks(instance);
+        ArrayList<Task> resultLastDone = solverSPT.InitLastDoneTasks(instance);
+
+        // Job 1 Task 1
+        resultLastDone = solverSPT.UpdateDoableTasks(instance,resultDoableTasks,new Task(0,0));
+
+    }
+
+    @Test
     public void testGreedySPTTest() throws IOException {
         Instance instance = Instance.fromFile(Paths.get("instances/aaa1"));
 

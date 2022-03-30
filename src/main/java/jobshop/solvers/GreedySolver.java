@@ -63,15 +63,15 @@ public class GreedySolver implements Solver {
         return doableTasks;
     }
 
-    public ArrayList<Task> UpdateDoableTasks(Instance instance, ArrayList<Task> doableTasks, Task task) {
-        if (task.task < instance.numTasks) {
-            Task newTask = new Task(task.job, task.task+1);
-            doableTasks.set(task.job, newTask);
-            return doableTasks;
+    // FIXME - No return needed in out arraylist
+    public ArrayList<Task> UpdateDoableTasks(Instance instance, ArrayList<Task> doableTasks, Task lastDoneTask) {
+        if (lastDoneTask.task < instance.numTasks) {
+            Task newTask = new Task(lastDoneTask.job, lastDoneTask.task+1);
+            doableTasks.set(lastDoneTask.job, newTask);
         } else {
-            doableTasks.remove(task.job);
-            return doableTasks;
+            doableTasks.remove(lastDoneTask.job);
         }
+        return doableTasks;
     }
 
     /**
@@ -180,6 +180,8 @@ public class GreedySolver implements Solver {
 
             // mettre a jour l'ensemble des taches faisables
             doableTasks = UpdateDoableTasks(instance, doableTasks, currentTask);
+            // Mettre a jour les taches deja faites
+            //lastDoneTasks.set(lastDoneTask.job, lastDoneTask);
         }
 
         throw new UnsupportedOperationException();
