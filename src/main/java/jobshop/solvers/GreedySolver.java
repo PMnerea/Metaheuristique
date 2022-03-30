@@ -86,6 +86,48 @@ public class GreedySolver implements Solver {
     }
 
     /**
+     * @param instance    The current instance
+     * @param doableTasks Task ArrayList of doable tasks
+     * @return Shortest processing time task in the set
+     */
+    public Task LPTTask(Instance instance, ArrayList<Task> doableTasks) {
+        int max = Integer.MIN_VALUE;
+        int index = 0;
+        int duration;
+        for (int i = 0; i < doableTasks.size(); i++) {
+            duration = instance.duration(doableTasks.get(i));
+            if (duration > max) {
+                max = duration;
+                index = i;
+            }
+        }
+        return doableTasks.get(index);
+    }
+
+    /**
+     * @param instance          The current instance
+     * @param doableTasks       Task ArrayList of doable tasks
+     * @param jobsLastDoneTasks Task ArrayList for every last finished tasks for each job
+     * @return Longest remaining processing time job's task is returned
+     */
+    public Task SRPTTask(Instance instance, ArrayList<Task> doableTasks, ArrayList<Task> jobsLastDoneTasks) {
+        // Compute job remaining time
+        int min = Integer.MAX_VALUE;
+        int index = 0;
+        int currentTime;
+        for (int i = 0; i < instance.numJobs; i++) {
+            // compute the remaining time for each job
+            currentTime = computeRemainingTime(i, instance, jobsLastDoneTasks);
+            if (currentTime < min) {
+                min = currentTime;
+                index = i;
+            }
+        }
+
+        return doableTasks.get(index);
+    }
+
+    /**
      * @param instance          The current instance
      * @param doableTasks       Task ArrayList of doable tasks
      * @param jobsLastDoneTasks Task ArrayList for every last finished tasks for each job
