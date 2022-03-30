@@ -24,6 +24,14 @@ public class GreedySolver implements Solver {
         this.priority = p;
     }
 
+    public ArrayList<Task> InitLastDoneTasks(Instance instance) {
+        ArrayList<Task> res = new ArrayList<Task>();
+        for (int i = 0; i < instance.numJobs; i++) {
+            res.add(i, new Task(i, -1));
+        }
+        return res;
+    }
+
     /**
      * @param job
      * @param instance
@@ -159,6 +167,8 @@ public class GreedySolver implements Solver {
         int machine;
         // Set of tasks -> 1 task for each job
         ArrayList<Task> doableTasks = InitDoableTasks(instance);
+        ArrayList<Task> lastDoneTasks = InitLastDoneTasks(instance);
+
         while (doableTasks.size() != 0) {
             // Choisir tache appropriée
             currentTask = SPTTask(instance, doableTasks);
