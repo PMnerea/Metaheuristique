@@ -24,6 +24,14 @@ public class GreedySolver implements Solver {
         this.priority = p;
     }
 
+    public ArrayList<Task> InitLastDoneTasks(Instance instance) {
+        ArrayList<Task> res = new ArrayList<Task>();
+        for (int i = 0; i < instance.numJobs; i++) {
+            res.add(i, new Task(i, -1));
+        }
+        return res;
+    }
+
     /**
      * @param job
      * @param instance
@@ -31,7 +39,6 @@ public class GreedySolver implements Solver {
      * @return
      */
     public int computeRemainingTime(int job, Instance instance, ArrayList<Task> jobsLastDoneTasks) {
-
         int lastDoneTask = jobsLastDoneTasks.get(job).task;
         int remainingTime = 0;
         // Calculate time from remaining tasks
@@ -105,6 +112,8 @@ public class GreedySolver implements Solver {
 
         // Set of tasks -> 1 task for each job
         ArrayList<Task> doableTasks = InitDoableTasks(instance);
+        ArrayList<Task> lastDoneTasks = InitLastDoneTasks(instance);
+
         while (doableTasks.size() != 0) {
             // TODO - Find a way to use specific choice function -> switch?
             // Add everything with index for doableTasks and last done tasks

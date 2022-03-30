@@ -18,6 +18,31 @@ import java.util.Optional;
 public class GreedySolverTests {
 
     @Test
+    public void testInitLastDoneTasks() throws IOException {
+        Instance instance = Instance.fromFile(Paths.get("instances/aaa1"));
+
+        GreedySolver  solverSPT = new GreedySolver(GreedySolver.Priority.SPT);
+
+        ArrayList<Task> resultLastTasks = solverSPT.InitLastDoneTasks(instance);
+        ArrayList<Task> expectedResultArray = new ArrayList<Task>();
+        expectedResultArray.add(0,new Task(0,-1));
+        expectedResultArray.add(1,new Task(1,-1));
+
+        Assert.assertEquals(expectedResultArray,resultLastTasks);
+    }
+
+    @Test
+    public void testRemainingTime() throws IOException {
+        Instance instance = Instance.fromFile(Paths.get("instances/aaa1"));
+
+        GreedySolver  solverSPT = new GreedySolver(GreedySolver.Priority.SPT);
+
+        ArrayList<Task> resultLastTasks = solverSPT.InitLastDoneTasks(instance);
+        Assert.assertEquals(8, solverSPT.computeRemainingTime(0, instance, resultLastTasks));
+        Assert.assertEquals(8, solverSPT.computeRemainingTime(1, instance, resultLastTasks));
+    }
+
+    @Test
     public void testGreedySPTTest() throws IOException {
         Instance instance = Instance.fromFile(Paths.get("instances/aaa1"));
 
@@ -36,6 +61,7 @@ public class GreedySolverTests {
         Assert.assertEquals(result,expectedResultSPT);
     }
 
+    @Test
     public void testGreedyLRPTTest() throws IOException {
         Instance instance = Instance.fromFile(Paths.get("instances/aaa1"));
 
@@ -48,7 +74,7 @@ public class GreedySolverTests {
 
         Assert.assertEquals(expectedResultArray,resultDoableTasks);
 
-
+        //solverLRPT.computeRemainingTime(0, instance, );
         Task expectedResultSPT = new Task(1,0); // second job first task
        // Assert.assertEquals(result,expectedResultSPT);
     }
