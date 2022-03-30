@@ -31,6 +31,7 @@ public class GreedySolver implements Solver {
      * @return
      */
     public int computeRemainingTime(int job, Instance instance, ArrayList<Task> jobsLastDoneTasks) {
+
         int lastDoneTask = jobsLastDoneTasks.get(job).task;
         int remainingTime = 0;
         // Calculate time from remaining tasks
