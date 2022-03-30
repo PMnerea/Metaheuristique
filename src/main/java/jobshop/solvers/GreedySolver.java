@@ -30,7 +30,7 @@ public class GreedySolver implements Solver {
      * @param jobsLastDoneTasks Task ArrayList for every last finished tasks for each job
      * @return
      */
-    private int computeRemainingTime(int job, Instance instance, ArrayList<Task> jobsLastDoneTasks) {
+    public int computeRemainingTime(int job, Instance instance, ArrayList<Task> jobsLastDoneTasks) {
         int lastDoneTask = jobsLastDoneTasks.get(job).task;
         int remainingTime = 0;
         // Calculate time from remaining tasks
@@ -44,7 +44,7 @@ public class GreedySolver implements Solver {
      * @param instance Instance to create list of doable tasks from.
      * @return Task ArrayList of doable Tasks
      */
-    private ArrayList<Task> InitDoableTasks(Instance instance) {
+    public ArrayList<Task> InitDoableTasks(Instance instance) {
         // Set of tasks
         ArrayList<Task> doableTasks = new ArrayList<>();
         // Initialize possible tasks with the initial tasks from all the jobs
@@ -60,7 +60,7 @@ public class GreedySolver implements Solver {
      * @param doableTasks Task ArrayList of doable tasks
      * @return Shortest processing time task in the set
      */
-    private Task SPTTask(Instance instance, ArrayList<Task> doableTasks) {
+    public Task SPTTask(Instance instance, ArrayList<Task> doableTasks) {
         int min = Integer.MAX_VALUE;
         int index = 0;
         int duration;
@@ -80,7 +80,7 @@ public class GreedySolver implements Solver {
      * @param jobsLastDoneTasks Task ArrayList for every last finished tasks for each job
      * @return Longest remaining processing time job's task is returned
      */
-    private Task LRPTTask(Instance instance, ArrayList<Task> doableTasks, ArrayList<Task> jobsLastDoneTasks) {
+    public Task LRPTTask(Instance instance, ArrayList<Task> doableTasks, ArrayList<Task> jobsLastDoneTasks) {
         // Compute job remaining time
         int max = Integer.MIN_VALUE;
         int index = 0;
