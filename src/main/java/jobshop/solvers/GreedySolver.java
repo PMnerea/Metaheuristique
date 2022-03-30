@@ -118,9 +118,6 @@ public class GreedySolver implements Solver {
         // Set of tasks -> 1 task for each job
         ArrayList<Task> doableTasks = InitDoableTasks(instance);
         while (doableTasks.size() != 0) {
-            // TODO - Find a way to use specific choice function -> switch?
-            // Add everything with index for doableTasks and last done tasks
-
             // Choisir tache appropriée
             currentTask = SPTTask(instance, doableTasks);
             // currentTask = LRPTTask(instance, doableTasks);
@@ -130,7 +127,7 @@ public class GreedySolver implements Solver {
             ro.addTaskToMachine(machine, currentTask);
 
             // mettre a jour l'ensemble des taches faisables
-
+            doableTasks = UpdateDoableTasks(instance, doableTasks, currentTask);
         }
 
         throw new UnsupportedOperationException();
