@@ -6,6 +6,7 @@ import jobshop.encodings.Task;
 import jobshop.encodings.ResourceOrder;
 import java.util.ArrayList;
 import java.util.Optional;
+import java.util.*;
 
 /**
  * An empty shell to implement a greedy solver.
@@ -64,17 +65,17 @@ public class GreedySolver implements Solver {
     }
 
     /**
-     *
-     * @param instance
-     * @param doableTasks
-     * @param lastDoneTask
+     * @param instance Instance to create list of doable tasks from.
+     * @param doableTasks List of remaining doable tasks.
+     * @param lastDoneTask The last task which has been done.
      */
     public void UpdateDoableTasks(Instance instance, ArrayList<Task> doableTasks, Task lastDoneTask) {
-        if (lastDoneTask.task < instance.numTasks) {
+        if (lastDoneTask.task < instance.numTasks-1) {
             Task newTask = new Task(lastDoneTask.job, lastDoneTask.task+1);
             doableTasks.set(lastDoneTask.job, newTask);
         } else {
-            doableTasks.remove(lastDoneTask.job);
+            Task newTask = new Task(lastDoneTask.job, -1);
+            doableTasks.set(lastDoneTask.job, newTask);
         }
     }
 
@@ -162,18 +163,31 @@ public class GreedySolver implements Solver {
         return doableTasks.get(index);
     }
 
+    private  boolean noJobLeft(int jobs, ArrayList<Task> doableTasks) {
+        boolean result = true;
+        for (int i=0; i<jobs; i++) {
+            if (doableTasks.get(i).task != -1) {
+                result = false;
+            }
+        }
+
+        return result;
+    }
+
     // TODO - Implement a greedy solver
     @Override
     public Optional<Schedule> solve(Instance instance, long deadline) {
         // Solution is represented by a resource order object
-        Task currentTask;
+        Task currentTask = new Task(0, 0);
         ResourceOrder ro = new ResourceOrder(instance);
         int machine;
         // Set of tasks -> 1 task for each job
         ArrayList<Task> doableTasks = InitDoableTasks(instance);
         ArrayList<Task> lastDoneTasks = InitLastDoneTasks(instance);
 
-        while (doableTasks.size() != 0) {
+        boolean noRemainingJobs = false;
+
+        while (!noRemainingJobs) {
             // Choisir tache appropriée
             switch (this.priority){
                 case SPT:
@@ -189,10 +203,9 @@ public class GreedySolver implements Solver {
                     currentTask = SRPTTask(instance,doableTasks,lastDoneTasks);
                 default:
                     // lots of things, hopefully not
-
             }
-            currentTask = SPTTask(instance, doableTasks);
-            // currentTask = LRPTTask(instance, doableTasks);
+            //currentTask = SPTTask(instance, doableTasks);
+            //currentTask = LRPTTask(instance, doableTasks);
 
             // Assigner cette tache correspondante dans le ressource order
             machine = instance.machine(currentTask);
@@ -202,9 +215,11 @@ public class GreedySolver implements Solver {
             UpdateDoableTasks(instance, doableTasks, currentTask);
             // Mettre a jour les taches deja faites
             lastDoneTasks.set(currentTask.job,currentTask);
+
+            noRemainingJobs = noJobLeft(instance.numJobs, doableTasks);
         }
 
-        throw new UnsupportedOperationException();
+        return ro.toSchedule();
     }
 
 
