@@ -6,5 +6,5 @@ To get started with the project, please follow the documentation: [https://insa-
 
 
 Prochaine etape (Nerea) :
-  - tester les autres solvers 
+  - tester les autres solvers (je pense qu'il faut regarder compute remaining time)
   - afficher le temps total d'un schedule
