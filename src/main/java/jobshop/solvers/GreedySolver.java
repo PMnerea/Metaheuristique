@@ -89,10 +89,12 @@ public class GreedySolver implements Solver {
         int index = 0;
         int duration;
         for (int i = 0; i < doableTasks.size(); i++) {
-            duration = instance.duration(doableTasks.get(i));
-            if (duration < min) {
-                min = duration;
-                index = i;
+            if (doableTasks.get(i).task >= 0) {
+                duration = instance.duration(doableTasks.get(i));
+                if (duration < min && duration >= 0) {
+                    min = duration;
+                    index = i;
+                }
             }
         }
         return doableTasks.get(index);
@@ -108,10 +110,12 @@ public class GreedySolver implements Solver {
         int index = 0;
         int duration;
         for (int i = 0; i < doableTasks.size(); i++) {
-            duration = instance.duration(doableTasks.get(i));
-            if (duration > max) {
-                max = duration;
-                index = i;
+            if (doableTasks.get(i).task >= 0) {
+                duration = instance.duration(doableTasks.get(i));
+                if (duration > max) {
+                    max = duration;
+                    index = i;
+                }
             }
         }
         return doableTasks.get(index);
@@ -131,6 +135,8 @@ public class GreedySolver implements Solver {
         for (int i = 0; i < instance.numJobs; i++) {
             // compute the remaining time for each job
             currentTime = computeRemainingTime(i, instance, jobsLastDoneTasks);
+            System.out.println("i" + i);
+            System.out.println(jobsLastDoneTasks);
             if (currentTime < min) {
                 min = currentTime;
                 index = i;

@@ -140,9 +140,30 @@ public class GreedySolverTests {
     public void testGreedySolving() throws  IOException {
         Instance instance = Instance.fromFile(Paths.get("instances/aaa3"));
 
-        GreedySolver solver = new GreedySolver(GreedySolver.Priority.LRPT);
-        Optional<Schedule> result = solver.solve(instance, 100);
+        // One solver for each algorithm
+        GreedySolver solverSPT = new GreedySolver(GreedySolver.Priority.SPT);
+        Optional<Schedule> resultSPT = solverSPT.solve(instance, 100);
 
-        System.out.println(result.toString());
+        GreedySolver solverLPT = new GreedySolver(GreedySolver.Priority.LPT);
+        Optional<Schedule> resultLPT = solverLPT.solve(instance, 100);
+
+        GreedySolver solverSRPT = new GreedySolver(GreedySolver.Priority.SRPT);
+        Optional<Schedule> resultSRPT = solverSRPT.solve(instance, 100);
+
+        GreedySolver solverLRPT = new GreedySolver(GreedySolver.Priority.LRPT);
+        Optional<Schedule> resultLRPT = solverLRPT.solve(instance, 100);
+
+        // Affichage de chaque solution
+        System.out.println("============= SPT ===============");
+        System.out.println(resultSPT.toString());
+
+        System.out.println("============= LPT ===============");
+        System.out.println(resultLPT.toString());
+
+        System.out.println("============= SRPT ===============");
+        System.out.println(resultSRPT.toString());
+
+        System.out.println("============= LRPT ===============");
+        System.out.println(resultLRPT.toString());
     }
 }
