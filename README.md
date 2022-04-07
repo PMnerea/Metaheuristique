@@ -7,3 +7,4 @@ To get started with the project, please follow the documentation: [https://insa-
 
 Prochaine etape (Nerea) :
   - trouver comment afficher le temps total d'un schedule
+  - tester blocks of critical path 
