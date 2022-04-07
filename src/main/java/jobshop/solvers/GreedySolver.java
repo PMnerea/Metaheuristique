@@ -135,9 +135,7 @@ public class GreedySolver implements Solver {
         for (int i = 0; i < instance.numJobs; i++) {
             // compute the remaining time for each job
             currentTime = computeRemainingTime(i, instance, jobsLastDoneTasks);
-            System.out.println("i" + i);
-            System.out.println(jobsLastDoneTasks);
-            if (currentTime < min) {
+            if (currentTime < min && currentTime>0) {
                 min = currentTime;
                 index = i;
             }
@@ -180,12 +178,12 @@ public class GreedySolver implements Solver {
         return result;
     }
 
-    // TODO - Implement a greedy solver
     @Override
     public Optional<Schedule> solve(Instance instance, long deadline) {
         // Solution is represented by a resource order object
         Task currentTask = new Task(0, 0);
         ResourceOrder ro = new ResourceOrder(instance);
+        Optional<Schedule> schedule;
         int machine;
         // Set of tasks -> 1 task for each job
         ArrayList<Task> doableTasks = InitDoableTasks(instance);
@@ -195,18 +193,18 @@ public class GreedySolver implements Solver {
 
         while (!noRemainingJobs) {
             // Choisir tache appropriée
-            switch (this.priority){
+            switch (this.priority) {
                 case SPT:
-                    currentTask = SPTTask(instance,doableTasks);
+                    currentTask = SPTTask(instance, doableTasks);
                     break;
                 case LRPT:
-                    currentTask = LRPTTask(instance,doableTasks,lastDoneTasks);
+                    currentTask = LRPTTask(instance, doableTasks, lastDoneTasks);
                     break;
                 case LPT:
-                    currentTask = LPTTask(instance,doableTasks);
+                    currentTask = LPTTask(instance, doableTasks);
                     break;
                 case SRPT:
-                    currentTask = SRPTTask(instance,doableTasks,lastDoneTasks);
+                    currentTask = SRPTTask(instance, doableTasks, lastDoneTasks);
                 default:
                     // lots of things, hopefully not
             }
@@ -220,7 +218,7 @@ public class GreedySolver implements Solver {
             // mettre a jour l'ensemble des taches faisables
             UpdateDoableTasks(instance, doableTasks, currentTask);
             // Mettre a jour les taches deja faites
-            lastDoneTasks.set(currentTask.job,currentTask);
+            lastDoneTasks.set(currentTask.job, currentTask);
 
             noRemainingJobs = noJobLeft(instance.numJobs, doableTasks);
         }
