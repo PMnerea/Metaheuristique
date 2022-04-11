@@ -17,8 +17,6 @@ import java.util.Optional;
 
 public class GreedySolverTests {
 
-    // TODO - Create tests for each remaining priority
-
     @Test
     public void testInitLastDoneTasks() throws IOException {
         Instance instance = Instance.fromFile(Paths.get("instances/aaa1"));
@@ -97,6 +95,8 @@ public class GreedySolverTests {
         Task expectedResultSPT = new Task(1,0); // second job first task
        // Assert.assertEquals(result,expectedResultSPT);
     }
+
+    // TODO - Create test for EST-LRPT and EST-SPT
 
 
 }
