@@ -90,7 +90,9 @@ public class Nowicki extends Neighborhood {
          *  The original ResourceOrder MUST NOT be modified by this operation.
          */
         public ResourceOrder generateFrom(ResourceOrder original) {
-            throw new UnsupportedOperationException();
+            ResourceOrder res = new ResourceOrder(original);
+            res.swapTasks(this.machine, this.t1, this.t2);
+            return res;
         }
 
         @Override
@@ -127,7 +129,11 @@ public class Nowicki extends Neighborhood {
         return neighbors;
     }
 
-    /** Returns a list of all the blocks of the critical path. */
+    /** Creates a new array list of all blocks of a critical path.
+     *
+     * @param order the current RessourceOrder.
+     * @return a list of all the blocks of the critical path.
+     */
     public List<Block> blocksOfCriticalPath(ResourceOrder order) {
         List<Block> blocks = new ArrayList<>();
         Block block;
@@ -179,19 +185,23 @@ public class Nowicki extends Neighborhood {
         return blocks;
     }
 
-    /** For a given block, return the possible swaps for the Nowicki and Smutnicki neighborhood */
+    /** Creates a new array list of all swaps of a block.
+     *
+     * @param block the current Block studied.
+     * @return For a given block, return the possible swaps for the Nowicki and Smutnicki neighborhood.
+     */
     public List<Swap> neighbors(Block block) {
-        int machine = block.machine;
-        int firstTask = block.firstTask;
-        int lastTask = block.lastTask;
+        List<Swap> swapList = new ArrayList<>();
 
-        List<Swap> swaps = new ArrayList<>();
-        Swap swap1 = new Swap(machine, firstTask, firstTask+1);
-        Swap swap2 = new Swap(machine, lastTask, lastTask-1);
-        swaps.add(swap1);
-        swaps.add(swap2);
+        if (block.lastTask - block.firstTask == 1) {
+            swapList.add(new Swap(block.machine, block.firstTask, block.lastTask));
+        }
+        else {
+            swapList.add(new Swap(block.machine, block.firstTask, block.firstTask+1));
+            swapList.add(new Swap(block.machine, block.lastTask, block.lastTask-1));
+        }
 
-        return swaps;
+        return swapList;
     }
 
 }
