@@ -30,29 +30,40 @@ public class DescentSolver implements Solver {
     // TODO - Implement a descent solver using Nowicki and Smutnicki neighborhood
     @Override
     public Optional<Schedule> solve(Instance instance, long deadline) {
+        // On trouve la solution du solver actuel
         Optional<Schedule> schedule = this.baseSolver.solve(instance, deadline);
 
+        // Tant qu'on ne trouve pas de voisin améliorant ou de timeout on continue
         boolean foundSolution = false;
-        while (!foundSolution) {
+        int timeout = 0;
+        while (!foundSolution && timeout <= 100) {
+            // find neighbours thanks to the resource order
             List<ResourceOrder> neighborhood = this.neighborhood.generateNeighbors(new ResourceOrder(schedule.get()));
+
+            // initialisation
             int bestNeighbor = -1;
             int bestNeighborSpan = -1;
             int bestMakespan = schedule.get().makespan();
 
+            // itération sur chaque voisin
             for (int i=0; i<neighborhood.size(); i++) {
                 int currentSpan = neighborhood.get(i).toSchedule().get().makespan();
+                // trouver le meilleur voisin
                 if (currentSpan < bestNeighborSpan || bestNeighborSpan == -1) {
                     bestNeighborSpan = currentSpan;
                     bestNeighbor = i;
                 }
             }
 
+            // si on trouve une meilleur solution alors on met fin à la boucle
             if (bestNeighborSpan >= bestMakespan) {
                 foundSolution = true;
             }
             else {
                 schedule = neighborhood.get(bestNeighbor).toSchedule();
             }
+
+            timeout++;
         }
 
         return schedule;
