@@ -57,6 +57,7 @@ public class DescentSolver implements Solver {
         return blocks;
     }
 
+
     /** Creates a new descent solver with a given neighborhood and a solver for the initial solution.
      *
      * @param neighborhood Neighborhood object that should be used to generates neighbor solutions to the current candidate.
