@@ -83,7 +83,7 @@ public class GreedySolver implements Solver {
     /**
      * @param remainingTime List to be initialized
      */
-    public void InitreamainingTime(int[] remainingTime) {
+    public void InitremainingTime(int[] remainingTime) {
         for (int i = 0; i < remainingTime.length; i++) {
             remainingTime[i] = 0;
         }
@@ -163,18 +163,17 @@ public class GreedySolver implements Solver {
     public Task LRPTTask(Instance instance, ArrayList<Task> doableTasks, ArrayList<Task> jobsLastDoneTasks) {
         // Compute job remaining time
         int max = Integer.MIN_VALUE;
-        int index = 0;
+        Task longest = new Task(-1,-1);
         int currentTime;
-        for (int i = 0; i < instance.numJobs; i++) {
-            // compute the remaining time for each job
-            currentTime = computeRemainingTime(i, instance, jobsLastDoneTasks);
+        // Compute remaining time for each job that has a doable Task
+        for (Task doableTask : doableTasks) {
+            currentTime = computeRemainingTime(doableTask.job, instance, jobsLastDoneTasks);
             if (currentTime > max) {
                 max = currentTime;
-                index = i;
+                longest = doableTask;
             }
         }
-
-        return doableTasks.get(index);
+        return longest;
     }
 
 
@@ -188,6 +187,14 @@ public class GreedySolver implements Solver {
     }
 
 
+    /**
+     *
+     * @param instance The current instance
+     * @param doableTasks ArrayList of the currently doable tasks
+     * @param finishingTimeMachines ArrayList of the finishing time for each machine
+     * @param jobCurrentTime    ArrayList of the current starting time for each job
+     * @return ArrayList of the starting times for each doable task
+     */
     public ArrayList<Integer> computeAvailableTime(Instance instance, ArrayList<Task> doableTasks, ArrayList<Integer> finishingTimeMachines, ArrayList<Integer> jobCurrentTime) {
         ArrayList<Integer> time = new ArrayList<>();
         int taskFreeTime;
@@ -219,16 +226,21 @@ public class GreedySolver implements Solver {
         // Compute starting time for doable Tasks
         ArrayList<Integer> time = computeAvailableTime(instance, doableTasks, finishingTimeMachines, jobCurrentTime);
         // Find minimum times
+        System.out.println("Doable tasks:");
+        System.out.println(doableTasks);
+        System.out.println("Times:");
+        System.out.println(time);
         int min = Integer.MAX_VALUE;
         for (int t : time) {
             if (min > t) {
                 min = t;
             }
         }
-        // Add all tasks with the same minimum time
-        for (Task doableTask : doableTasks) {
-            if (min == instance.duration(doableTask)) {
-                filteredTasks.add(doableTask);
+        // Add all tasks with the same minimum starting time
+        // Works because time is indexed with doableTasks !
+        for (int i = 0; i < time.size(); i++) {
+            if (time.get(i) == min) {
+                filteredTasks.add(doableTasks.get(i));
             }
         }
         // Run the SPT choice with the filtered Array
@@ -252,25 +264,30 @@ public class GreedySolver implements Solver {
         // Compute starting time for doable Tasks
         ArrayList<Integer> time = computeAvailableTime(instance, doableTasks, finishingTimeMachines, jobCurrentTime);
         // Find minimum times
+        System.out.println("Doable tasks:");
+        System.out.println(doableTasks);
+        System.out.println("Times:");
+        System.out.println(time);
         int min = Integer.MAX_VALUE;
-        for (Task doableTask : doableTasks) {
-            if (min > instance.duration(doableTask)) {
-                min = instance.duration(doableTask);
+        for (int t : time) {
+            if (min > t) {
+                min = t;
             }
         }
-        // Add all tasks with the same minimum time
-        for (Task doableTask : doableTasks) {
-            if (min == instance.duration(doableTask)) {
-                filteredTasks.add(doableTask);
+        // Add all tasks with the same minimum starting time
+        // Works because time is indexed with doableTasks !
+        for (int i = 0; i < time.size(); i++) {
+            if (time.get(i) == min) {
+                filteredTasks.add(doableTasks.get(i));
             }
         }
-
+        System.out.println("Filtered :");
+        System.out.println(filteredTasks);
         Task chosenTask =  LRPTTask(instance, filteredTasks,jobsLastDone);
         ESTReturn result = new ESTReturn(chosenTask,min);
         return result;
     }
 
-    // TODO - Complete with all the greedy methods
     private  boolean noJobLeft(int jobs, ArrayList<Task> doableTasks) {
         boolean result = true;
         for (int i=0; i<jobs; i++) {
@@ -293,9 +310,6 @@ public class GreedySolver implements Solver {
         // Set of tasks -> 1 task for each job
         ArrayList<Task> doableTasks = InitDoableTasks(instance);
         ArrayList<Task> lastDoneTasks = InitLastDoneTasks(instance);
-        int[] machineRemainingTime = new int[instance.numJobs];
-        InitreamainingTime(machineRemainingTime);
-
 
         ArrayList<Integer> finishingTimeMachines = new ArrayList<>();
         ArrayList<Integer> jobCurrentTime = new ArrayList<>();
@@ -336,7 +350,6 @@ public class GreedySolver implements Solver {
                     jobCurrentTime.set(currentTask.job, calc);
                     // Update finishing time for the machine
                     finishingTimeMachines.set(instance.machine(currentTask),calc);
-                    currentTask = SRPTTask(instance, doableTasks, lastDoneTasks);
                 default:
                     // lots of things, hopefully not
 
