@@ -28,6 +28,7 @@ public class DescentSolver implements Solver {
     }
 
     // TODO - Implement a descent solver using Nowicki and Smutnicki neighborhood
+    // FIXME - trouver pb algo
     @Override
     public Optional<Schedule> solve(Instance instance, long deadline) {
         // On trouve la solution du solver actuel

@@ -23,21 +23,17 @@ public class DescentSolverTests {
     public void testDescentSolving() throws  IOException {
         Instance instance = Instance.fromFile(Paths.get("instances/aaa3"));
         ResourceOrder order = new ResourceOrder(instance);
-        Neighborhood neighborhood = new Neighborhood() {
-            @Override
-            public List<ResourceOrder> generateNeighbors(ResourceOrder current) {
-                return null;
-            }
-        };
-        //Nowicki nowicki = new Nowicki();
+
+        Nowicki nowicki = new Nowicki();
         //List<ResourceOrder> neighborhood = nowicki.generateNeighbors(order);
 
         GreedySolver solverSPT = new GreedySolver(GreedySolver.Priority.SPT);
         //Optional<Schedule> resultSPT = solverSPT.solve(instance, 100);
 
         // One solver for each algorithm
+        // FIXME - voisinqge vide
         /** PB : le voisinage est vide **/
-        DescentSolver descentSolver = new DescentSolver(neighborhood, solverSPT);
+        DescentSolver descentSolver = new DescentSolver(nowicki, solverSPT);
         Optional<Schedule> resultDescent = descentSolver.solve(instance, 100);
 
 
