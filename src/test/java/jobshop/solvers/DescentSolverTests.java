@@ -31,8 +31,6 @@ public class DescentSolverTests {
         //Optional<Schedule> resultSPT = solverSPT.solve(instance, 100);
 
         // One solver for each algorithm
-        // FIXME - voisinqge vide
-        /** PB : le voisinage est vide **/
         DescentSolver descentSolver = new DescentSolver(nowicki, solverSPT);
         Optional<Schedule> resultDescent = descentSolver.solve(instance, 100);
 
