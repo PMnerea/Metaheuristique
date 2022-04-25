@@ -287,7 +287,7 @@ public class GreedySolver implements Solver {
 
     // TODO - Create random greedy solving
 
-    private  boolean noJobLeft(int jobs, ArrayList<Task> doableTasks) {
+    protected boolean noJobLeft(int jobs, ArrayList<Task> doableTasks) {
         boolean result = true;
         for (int i=0; i<jobs; i++) {
             if (doableTasks.get(i).task != -1) {

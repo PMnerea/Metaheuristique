@@ -256,6 +256,9 @@ public class GreedySolverTests {
         GreedySolver solverESTLRPT = new GreedySolver(GreedySolver.Priority.EST_LRPT);
         Optional<Schedule> resultESTLRPT = solverESTLRPT.solve(instance, 100);
 
+        GreedyRandomSolver solverRandom = new GreedyRandomSolver(GreedySolver.Priority.EST_SPT,100);
+        Optional<Schedule> resultRandom = solverRandom.solve(instance,100);
+
         // Affichage de chaque solution
         System.out.println("============= SPT ===============");
         System.out.println(resultSPT.toString());
@@ -274,6 +277,9 @@ public class GreedySolverTests {
 
         System.out.println("============= EST-LRPT ===============");
         System.out.println(resultESTLRPT.toString());
+
+        System.out.println("============= Random EST-SPT ===============");
+        System.out.println(resultRandom.toString());
 
 
     }
