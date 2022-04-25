@@ -378,6 +378,6 @@ public class GreedySolver implements Solver {
      * All possible priorities for the greedy solver.
      */
     public enum Priority {
-        SPT, LPT, SRPT, LRPT, EST_SPT, EST_LPT, EST_SRPT, EST_LRPT
+        SPT, LPT, SRPT, LRPT, EST_SPT, EST_LRPT
     }
 }
