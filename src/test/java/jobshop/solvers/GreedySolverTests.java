@@ -18,7 +18,7 @@ public class GreedySolverTests {
     public void testInitLastDoneTasks() throws IOException {
         Instance instance = Instance.fromFile(Paths.get("instances/aaa1"));
 
-        GreedySolver  solverSPT = new GreedySolver(GreedySolver.Priority.SPT);
+        GreedySolver solverSPT = new GreedySolver(GreedySolver.Priority.SPT);
 
         ArrayList<Task> resultLastTasks = solverSPT.InitLastDoneTasks(instance);
         ArrayList<Task> expectedResultArray = new ArrayList<Task>();

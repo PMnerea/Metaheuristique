@@ -1,6 +1,9 @@
 package jobshop.solvers.neighborhood;
 
+import jobshop.Instance;
 import jobshop.encodings.ResourceOrder;
+import jobshop.encodings.Schedule;
+import jobshop.encodings.Task;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -87,7 +90,9 @@ public class Nowicki extends Neighborhood {
          *  The original ResourceOrder MUST NOT be modified by this operation.
          */
         public ResourceOrder generateFrom(ResourceOrder original) {
-            throw new UnsupportedOperationException();
+            ResourceOrder res = new ResourceOrder(original);
+            res.swapTasks(this.machine, this.t1, this.t2);
+            return res;
         }
 
         @Override
@@ -124,14 +129,79 @@ public class Nowicki extends Neighborhood {
         return neighbors;
     }
 
-    /** Returns a list of all the blocks of the critical path. */
-    List<Block> blocksOfCriticalPath(ResourceOrder order) {
-        throw new UnsupportedOperationException();
+    /** Creates a new array list of all blocks of a critical path.
+     *
+     * @param order the current RessourceOrder.
+     * @return a list of all the blocks of the critical path.
+     */
+    public List<Block> blocksOfCriticalPath(ResourceOrder order) {
+        List<Block> blocks = new ArrayList<>();
+        Block block;
+
+        Instance instance = order.instance;
+        int numMachines = instance.numMachines;
+
+        Schedule schedule = new Schedule(instance);
+        List<Task> criticalPath = schedule.criticalPath();
+
+        // définition d'entier pour représenter les indices
+        int first;
+        int last;
+
+        // on va regarder pour chaque machine si elle a des blocks
+        for(int m = 0; m<numMachines; m++) {
+            // on met le premier et le dernier à 0 pour commencer à boucler sur une machine
+            first = 0;
+            last = 0;
+
+            // pour chaque tache du chemin critique on va regarder si elle appartient à un block
+            for (int i = 0; i < criticalPath.size() - 1; i++) {
+                // on regarde la tache actuelle et la suivante
+                Task currentTask = criticalPath.get(i);
+                Task nexTask = criticalPath.get(i + 1);
+
+                // Si la tache actuelle appartient a la machine et la taille du block est de 0 alors on l'ajoute
+                if (instance.machine(currentTask) == m && first == 0 && last == 0) {
+                    first = i;
+                    last = i;
+                }
+                // si l'actuelle et la suivante valent m alors on ajoute la suivante
+                // (l'actuelle est sensee y etre deja)
+                else if (instance.machine(currentTask) == m && instance.machine(nexTask) == m) {
+                    last = i;
+                }
+            }
+
+            // on initialise un block
+            block = new Block(m, first, last);
+
+
+            // si aucun des cas precedent et le block est plus grand que 1 alors on a un block
+            if (block.firstTask < block.lastTask) {
+                blocks.add(block);
+            }
+        }
+
+        return blocks;
     }
 
-    /** For a given block, return the possible swaps for the Nowicki and Smutnicki neighborhood */
-    List<Swap> neighbors(Block block) {
-        throw new UnsupportedOperationException();
+    /** Creates a new array list of all swaps of a block.
+     *
+     * @param block the current Block studied.
+     * @return For a given block, return the possible swaps for the Nowicki and Smutnicki neighborhood.
+     */
+    public List<Swap> neighbors(Block block) {
+        List<Swap> swapList = new ArrayList<>();
+
+        if (block.lastTask - block.firstTask == 1) {
+            swapList.add(new Swap(block.machine, block.firstTask, block.lastTask));
+        }
+        else {
+            swapList.add(new Swap(block.machine, block.firstTask, block.firstTask+1));
+            swapList.add(new Swap(block.machine, block.lastTask, block.lastTask-1));
+        }
+
+        return swapList;
     }
 
 }
