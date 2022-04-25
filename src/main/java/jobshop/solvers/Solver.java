@@ -22,6 +22,17 @@ public interface Solver {
         switch (name) {
             case "basic": return new BasicSolver();
             case "spt": return new GreedySolver(GreedySolver.Priority.SPT);
+            case "lrpt": return new GreedySolver(GreedySolver.Priority.LRPT);
+            case "lpt": return new GreedySolver(GreedySolver.Priority.LPT);
+            case "srpt": return new GreedySolver(GreedySolver.Priority.SRPT);
+            case "est_spt": return new GreedySolver(GreedySolver.Priority.EST_SPT);
+            case "est_lrpt": return new GreedySolver(GreedySolver.Priority.EST_LRPT);
+            case "random_spt": return new GreedyRandomSolver(GreedySolver.Priority.SPT,20);
+            case "random_lrpt": return new GreedyRandomSolver(GreedySolver.Priority.LRPT,20);
+            case "random_lpt": return new GreedyRandomSolver(GreedySolver.Priority.LPT,20);
+            case "random_srpt": return new GreedyRandomSolver(GreedySolver.Priority.SRPT,20);
+            case "random_est_spt": return new GreedyRandomSolver(GreedySolver.Priority.EST_SPT,20);
+            case "random_est_lrpt": return new GreedyRandomSolver(GreedySolver.Priority.EST_LRPT,20);
             // TODO: add new solvers
             default: throw new RuntimeException("Unknown solver: "+ name);
         }
