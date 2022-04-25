@@ -135,7 +135,6 @@ public class GreedySolverTests {
         Assert.assertEquals(expectedResultLRPT, result);
     }
 
-    // TODO - Create test for EST-LRPT and EST-SPT
     @Test
     public void testComputeAvailableTime() throws IOException {
         Instance instance = Instance.fromFile(Paths.get("instances/aaa3"));
@@ -147,20 +146,20 @@ public class GreedySolverTests {
         ArrayList<Integer> jobCurrentTime = new ArrayList<>();
         solverEST.InitESTArrays(instance,finishingTimeMachines,jobCurrentTime);
 
-        ArrayList<Integer> expected = new ArrayList<>();
+        ArrayList<ESTReturn> expected = new ArrayList<>();
 
         // First test
         for (int i = 0; i < 4; i++) {
-            expected.add(0);
+            expected.add(new ESTReturn(new Task(i,0),0));
         }
-        ArrayList<Integer> res = solverEST.computeAvailableTime(instance,doableTasks,finishingTimeMachines,jobCurrentTime);
+        ArrayList<ESTReturn> res = solverEST.computeAvailableTime(instance,doableTasks,finishingTimeMachines,jobCurrentTime);
         Assert.assertEquals(expected,res);
 
         // Second test
-        expected.set(0,1);
-        expected.set(1,0);
-        expected.set(2,1);
-        expected.set(3,0);
+        expected.set(0,new ESTReturn(new Task(0,1),1));
+        expected.set(1,new ESTReturn(new Task(1,0),0));
+        expected.set(2,new ESTReturn(new Task(2,0),1));
+        expected.set(3,new ESTReturn(new Task(3,0),0));
 
         solverEST.UpdateDoableTasks(instance,doableTasks,doableTasks.get(0));
         jobCurrentTime.set(0,1);
@@ -234,7 +233,6 @@ public class GreedySolverTests {
         res = solverESTLRPT.EST_LRPTTask(instance,doableTasks,lastDoneTasks,finishingTimeMachines,jobCurrentTime);
         Assert.assertEquals(res.getTask(),expected);
     }
-
     @Test
     public void testGreedySolving() throws  IOException {
         Instance instance = Instance.fromFile(Paths.get("instances/aaa3"));
@@ -245,7 +243,7 @@ public class GreedySolverTests {
 
         GreedySolver solverLPT = new GreedySolver(GreedySolver.Priority.LPT);
         Optional<Schedule> resultLPT = solverLPT.solve(instance, 100);
-        //FIXME - access to index -1
+
         GreedySolver solverSRPT = new GreedySolver(GreedySolver.Priority.SRPT);
         Optional<Schedule> resultSRPT = solverSRPT.solve(instance, 100);
 
@@ -254,6 +252,9 @@ public class GreedySolverTests {
 
         GreedySolver solverESTSPT = new GreedySolver(GreedySolver.Priority.EST_SPT);
         Optional<Schedule> resultESTSPT = solverESTSPT.solve(instance, 100);
+
+        GreedySolver solverESTLRPT = new GreedySolver(GreedySolver.Priority.EST_LRPT);
+        Optional<Schedule> resultESTLRPT = solverESTLRPT.solve(instance, 100);
 
         // Affichage de chaque solution
         System.out.println("============= SPT ===============");
@@ -268,11 +269,12 @@ public class GreedySolverTests {
         System.out.println("============= LRPT ===============");
         System.out.println(resultLRPT.toString());
 
-        // TODO - Update with EST algo
-        System.out.println("============= EST-LRPT ===============");
-        System.out.println(resultLRPT.toString());
-
         System.out.println("============= EST-SPT ===============");
         System.out.println(resultESTSPT.toString());
+
+        System.out.println("============= EST-LRPT ===============");
+        System.out.println(resultESTLRPT.toString());
+
+
     }
 }

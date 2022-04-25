@@ -195,20 +195,26 @@ public class GreedySolver implements Solver {
      * @param jobCurrentTime    ArrayList of the current starting time for each job
      * @return ArrayList of the starting times for each doable task
      */
-    public ArrayList<Integer> computeAvailableTime(Instance instance, ArrayList<Task> doableTasks, ArrayList<Integer> finishingTimeMachines, ArrayList<Integer> jobCurrentTime) {
-        ArrayList<Integer> time = new ArrayList<>();
+    public ArrayList<ESTReturn> computeAvailableTime(Instance instance, ArrayList<Task> doableTasks, ArrayList<Integer> finishingTimeMachines, ArrayList<Integer> jobCurrentTime) {
+        ArrayList<ESTReturn> time = new ArrayList<>();
         int taskFreeTime;
         int machineFreeTime;
         int machine;
         int availableTime;
         for (Task doableTask : doableTasks) {
             // Retrieve finishing time for the machine
-            machine = instance.machine(doableTask);
-            machineFreeTime = finishingTimeMachines.get(machine);
-            // Retrieve current starting time for the task
-            taskFreeTime = jobCurrentTime.get(doableTask.job);
-            availableTime = Integer.max(taskFreeTime, machineFreeTime);
-            time.add(doableTasks.indexOf(doableTask), availableTime);
+
+            if (doableTask.task >= 0) {
+                machine = instance.machine(doableTask);
+                machineFreeTime = finishingTimeMachines.get(machine);
+                // Retrieve current starting time for the task
+                taskFreeTime = jobCurrentTime.get(doableTask.job);
+                availableTime = Integer.max(taskFreeTime, machineFreeTime);
+                int job = doableTasks.indexOf(doableTask);
+
+                time.add(new ESTReturn(doableTask,availableTime));
+
+            }
         }
         return time;
     }
@@ -224,25 +230,22 @@ public class GreedySolver implements Solver {
     public ESTReturn EST_SPTTask(Instance instance, ArrayList<Task> doableTasks, ArrayList<Integer> finishingTimeMachines, ArrayList<Integer> jobCurrentTime) {
         ArrayList<Task> filteredTasks = new ArrayList<>();
         // Compute starting time for doable Tasks
-        ArrayList<Integer> time = computeAvailableTime(instance, doableTasks, finishingTimeMachines, jobCurrentTime);
+        ArrayList<ESTReturn> time = computeAvailableTime(instance, doableTasks, finishingTimeMachines, jobCurrentTime);
         // Find minimum times
-        System.out.println("Doable tasks:");
-        System.out.println(doableTasks);
-        System.out.println("Times:");
-        System.out.println(time);
         int min = Integer.MAX_VALUE;
-        for (int t : time) {
-            if (min > t) {
-                min = t;
+        for (ESTReturn t : time) {
+            if (min > t.startingTime) {
+                min = t.startingTime;
             }
         }
         // Add all tasks with the same minimum starting time
         // Works because time is indexed with doableTasks !
-        for (int i = 0; i < time.size(); i++) {
-            if (time.get(i) == min) {
-                filteredTasks.add(doableTasks.get(i));
+        for (ESTReturn estReturn : time) {
+            if (estReturn.startingTime == min){
+                filteredTasks.add(estReturn.task);
             }
         }
+
         // Run the SPT choice with the filtered Array
         Task chosenTask =  SPTTask(instance, filteredTasks);
         ESTReturn result = new ESTReturn(chosenTask,min);
@@ -262,31 +265,27 @@ public class GreedySolver implements Solver {
 
         ArrayList<Task> filteredTasks = new ArrayList<>();
         // Compute starting time for doable Tasks
-        ArrayList<Integer> time = computeAvailableTime(instance, doableTasks, finishingTimeMachines, jobCurrentTime);
+        ArrayList<ESTReturn> time = computeAvailableTime(instance, doableTasks, finishingTimeMachines, jobCurrentTime);
         // Find minimum times
-        System.out.println("Doable tasks:");
-        System.out.println(doableTasks);
-        System.out.println("Times:");
-        System.out.println(time);
         int min = Integer.MAX_VALUE;
-        for (int t : time) {
-            if (min > t) {
-                min = t;
+        for (ESTReturn t : time) {
+            if (min > t.startingTime) {
+                min = t.startingTime;
             }
         }
         // Add all tasks with the same minimum starting time
         // Works because time is indexed with doableTasks !
-        for (int i = 0; i < time.size(); i++) {
-            if (time.get(i) == min) {
-                filteredTasks.add(doableTasks.get(i));
+        for (ESTReturn estReturn : time) {
+            if (estReturn.startingTime == min){
+                filteredTasks.add(estReturn.task);
             }
         }
-        System.out.println("Filtered :");
-        System.out.println(filteredTasks);
         Task chosenTask =  LRPTTask(instance, filteredTasks,jobsLastDone);
         ESTReturn result = new ESTReturn(chosenTask,min);
         return result;
     }
+
+    // TODO - Create random greedy solving
 
     private  boolean noJobLeft(int jobs, ArrayList<Task> doableTasks) {
         boolean result = true;
@@ -334,28 +333,30 @@ public class GreedySolver implements Solver {
                     break;
                 case SRPT:
                     currentTask = SRPTTask(instance, doableTasks, lastDoneTasks);
+                    break;
                 case EST_SPT:
-                    res = EST_SPTTask(instance,doableTasks,finishingTimeMachines,jobCurrentTime);
+                    res = EST_SPTTask(instance, doableTasks, finishingTimeMachines, jobCurrentTime);
+                    //System.out.println("res :" + res);
                     currentTask = res.getTask();
                     // Update finishing time for the job
                     calc = res.getStartingTime() + instance.duration(currentTask);
                     jobCurrentTime.set(currentTask.job, calc);
                     // Update finishing time for the machine
-                    finishingTimeMachines.set(instance.machine(currentTask),calc);
+                    finishingTimeMachines.set(instance.machine(currentTask), calc);
+                    break;
                 case EST_LRPT:
-                    res = EST_LRPTTask(instance,doableTasks,lastDoneTasks,finishingTimeMachines,jobCurrentTime);
+                    res = EST_LRPTTask(instance, doableTasks, lastDoneTasks, finishingTimeMachines, jobCurrentTime);
                     currentTask = res.getTask();
                     // Update finishing time for the job
                     calc = res.getStartingTime() + instance.duration(currentTask);
                     jobCurrentTime.set(currentTask.job, calc);
                     // Update finishing time for the machine
-                    finishingTimeMachines.set(instance.machine(currentTask),calc);
+                    finishingTimeMachines.set(instance.machine(currentTask), calc);
+                    break;
                 default:
                     // lots of things, hopefully not
 
             }
-            //currentTask = SPTTask(instance, doableTasks);
-            //currentTask = LRPTTask(instance, doableTasks);
 
             // Assigner cette tache correspondante dans le ressource order
             machine = instance.machine(currentTask);

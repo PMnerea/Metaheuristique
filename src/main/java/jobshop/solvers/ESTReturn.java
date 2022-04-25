@@ -34,4 +34,9 @@ public class ESTReturn {
     public int hashCode() {
         return Objects.hash(getStartingTime(), getTask());
     }
+
+    @Override
+    public String toString(){
+        return ("Starting Time: "+Integer.toString(startingTime) +" Task: "+ task.toString());
+    }
 }
