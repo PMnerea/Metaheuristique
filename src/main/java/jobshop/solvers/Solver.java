@@ -38,4 +38,8 @@ public interface Solver {
         }
     }
 
+    enum SolverType{
+        GREEDY, RANDOMISED, BASIC, DESCENT, TABOU
+    }
+
 }
