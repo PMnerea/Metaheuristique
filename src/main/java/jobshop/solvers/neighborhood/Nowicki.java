@@ -74,17 +74,17 @@ public class Nowicki extends Neighborhood {
         public final int t2;
 
         /** Creates a new swap of two tasks. */
-        Swap(int machine, int t1, int t2) {
+        public Swap(int machine, int t1, int t2) {
             this.machine = machine;
-            if (t1 < t2) {
-                this.t1 = t1;
-                this.t2 = t2;
-            } else {
-                this.t1 = t2;
-                this.t2 = t1;
-            }
+
+            this.t1 = t1;
+            this.t2 = t2;
         }
 
+        @Override
+        public String toString() {
+            return "Machine: " + machine + " Task1: " + t1 + " Task2: " + t2;
+        }
 
         /** Creates a new ResourceOrder order that is the result of performing the swap in the original ResourceOrder.
          *  The original ResourceOrder MUST NOT be modified by this operation.

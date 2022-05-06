@@ -16,11 +16,14 @@ public class Taboo implements Solver {
 
     final int maxIteration;
 
+    final int tabooTime;
+
     final Neighborhood neighborhood = new Nowicki();
 
-    public Taboo(Solver solver, int maxIteration){
+    public Taboo(Solver solver, int maxIteration,int time){
         this.baseSolver = solver;
         this.maxIteration = maxIteration;
+        this.tabooTime = time;
     }
 
     // TODO - Second version -> Create structure to manage taboo solutions
@@ -43,6 +46,9 @@ public class Taboo implements Solver {
         // Init iterator variable
         int iterator = 0;
 
+        // Create Taboo List
+        TabooList tabooList = new TabooList();
+
         List<ResourceOrder> neighbors;
         while(iterator>=maxIteration){
             iterator++;
@@ -51,6 +57,8 @@ public class Taboo implements Solver {
             for (ResourceOrder neighbor : neighbors) {
                 if (neighbor.toSchedule().get().makespan() < localBestSolution.makespan()) {
                     localBestSolution = neighbor.toSchedule().get();
+                    // TODO - Check if swap is not part of the taboo list
+                    // TODO - Retrieve swap and add it to the list
                 }
             }
             tabooSolutions.add(localBestSolution.toSchedule().get());
@@ -58,6 +66,7 @@ public class Taboo implements Solver {
             if (localBestSolution.makespan() < bestSolution.makespan()){
                 bestSolution = localBestSolution;
             }
+            // TODO - Update tabooList
         }
         return Optional.ofNullable(bestSolution);
     }
