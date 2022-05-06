@@ -18,7 +18,7 @@ public class Taboo implements Solver {
 
     final int tabooTime;
 
-    final Neighborhood neighborhood = new Nowicki();
+    final Nowicki neighborhood = new Nowicki();
 
     public Taboo(Solver solver, int maxIteration,int time){
         this.baseSolver = solver;
@@ -26,12 +26,12 @@ public class Taboo implements Solver {
         this.tabooTime = time;
     }
 
-    // TODO - Second version -> Create structure to manage taboo solutions
-    // Some solutions are taboo for a certain time
     // TODO - Third version -> Accept Taboo solution when it improves solution
     @Override
     public  Optional<Schedule> solve(Instance instance, long deadline){
 
+        long start = System.currentTimeMillis();
+        long end = 0;
         Optional<Schedule> current = baseSolver.solve(instance,deadline);
         assert current.isPresent();
 
@@ -39,34 +39,61 @@ public class Taboo implements Solver {
         Schedule bestSolution = current.get();
         Schedule localBestSolution = current.get();
 
-        // Add base solution to tabou solution list
-        ArrayList<Schedule> tabooSolutions = new ArrayList<>();
-        tabooSolutions.add(current.get());
-
         // Init iterator variable
         int iterator = 0;
 
+        // Init iterator for swaps
+        int indexSwap;
+        int indexSelectedSwap;
+
+        // Boolean found a local best
+        boolean found;
+
         // Create Taboo List
+        // No need to add current solution because we only keep in memory the taboo swaps
         TabooList tabooList = new TabooList();
 
+        // Swap list
+        List<Nowicki.Swap> swaps;
+        // Each neighbor is at that same index than its corresponding swap??
         List<ResourceOrder> neighbors;
+
         while(iterator>=maxIteration){
+            found = false;
+            // Update tabooList
+            tabooList.update();
             iterator++;
             neighbors = neighborhood.generateNeighbors(new ResourceOrder(localBestSolution));
+            swaps = neighborhood.allSwaps(new ResourceOrder(localBestSolution));
+
             // Find best neighbor
+            indexSwap = 0;
+            indexSelectedSwap = 0;
             for (ResourceOrder neighbor : neighbors) {
-                if (neighbor.toSchedule().get().makespan() < localBestSolution.makespan()) {
-                    localBestSolution = neighbor.toSchedule().get();
-                    // TODO - Check if swap is not part of the taboo list
-                    // TODO - Retrieve swap and add it to the list
+                // Check if swap is not part of the taboo list
+                if (!tabooList.isPresent(swaps.get(indexSwap))){
+                    // Find best neighbor
+                    if (neighbor.toSchedule().get().makespan() < localBestSolution.makespan()) {
+                        localBestSolution = neighbor.toSchedule().get();
+                        indexSelectedSwap = indexSwap;
+                        found = true;
+                    }
+                }
+                indexSwap++;
+            }
+
+            // Modifications only if a local best is found
+            if (found) {
+                // Add selected swap to the tabooList
+                tabooList.addTaboo(tabooTime, swaps.get(indexSelectedSwap));
+                // Check for global best
+                if (localBestSolution.makespan() < bestSolution.makespan()) {
+                    bestSolution = localBestSolution;
                 }
             }
-            tabooSolutions.add(localBestSolution.toSchedule().get());
 
-            if (localBestSolution.makespan() < bestSolution.makespan()){
-                bestSolution = localBestSolution;
-            }
-            // TODO - Update tabooList
+            end = System.currentTimeMillis();
+            if ((end - start)> deadline) {break;}
         }
         return Optional.ofNullable(bestSolution);
     }

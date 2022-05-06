@@ -114,7 +114,6 @@ public class Nowicki extends Neighborhood {
     public List<ResourceOrder> generateNeighbors(ResourceOrder current) {
         // convert the list of swaps into a list of neighbors (function programming FTW)
         return allSwaps(current).stream().map(swap -> swap.generateFrom(current)).collect(Collectors.toList());
-
     }
 
     /** Generates all swaps of the given ResourceOrder.

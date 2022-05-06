@@ -6,7 +6,6 @@ import java.util.Hashtable;
 import java.util.Map;
 import java.util.Objects;
 
-// FIXME - Change key from swap to block
 public class TabooList {
 
     public Hashtable<Nowicki.Swap, Integer> table;

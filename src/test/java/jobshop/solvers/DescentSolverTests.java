@@ -39,4 +39,23 @@ public class DescentSolverTests {
         System.out.println("============= Descent ===============");
         System.out.println(resultDescent.toString());
     }
+
+    @Test
+    public void testGenerateNeighbors() throws IOException{
+        Instance instance = Instance.fromFile(Paths.get("instances/aaa3"));
+        ResourceOrder current = new ResourceOrder(instance);
+        Nowicki nowicki = new Nowicki();
+
+        List<Nowicki.Swap> swaps = nowicki.allSwaps(current);
+        List<ResourceOrder> orders = nowicki.generateNeighbors(current);
+
+        boolean testValue;
+        Assert.assertTrue((orders.size() == swaps.size()));
+
+        for (int i = 0; i < swaps.size(); i++) {
+            testValue = swaps.get(i).generateFrom(current).equals(orders.get(i));
+            Assert.assertTrue(testValue);
+        }
+
+    }
 }
