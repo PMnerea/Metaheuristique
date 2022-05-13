@@ -285,8 +285,6 @@ public class GreedySolver implements Solver {
         return result;
     }
 
-    // TODO - Create random greedy solving
-
     protected boolean noJobLeft(int jobs, ArrayList<Task> doableTasks) {
         boolean result = true;
         for (int i=0; i<jobs; i++) {

@@ -76,9 +76,13 @@ public class Nowicki extends Neighborhood {
         /** Creates a new swap of two tasks. */
         public Swap(int machine, int t1, int t2) {
             this.machine = machine;
-
-            this.t1 = t1;
-            this.t2 = t2;
+            if (t1 < t2) {
+                this.t1 = t1;
+                this.t2 = t2;
+            } else {
+                this.t1 = t2;
+                this.t2 = t1;
+            }
         }
 
         @Override

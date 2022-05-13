@@ -2,9 +2,7 @@ package jobshop.solvers;
 
 import jobshop.solvers.neighborhood.Nowicki;
 
-import java.util.Hashtable;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 public class TabooList {
 
@@ -52,6 +50,14 @@ public class TabooList {
      */
     public boolean isPresent(Nowicki.Swap swap){
         return this.table.containsKey(swap);
+    }
+
+    /**
+     *
+     * @return A set of all the keys in the hashtable
+     */
+    public Set<Nowicki.Swap> getSwaps() {
+        return table.keySet();
     }
 
 }

@@ -26,18 +26,22 @@ public class Taboo implements Solver {
         this.tabooTime = time;
     }
 
-    // TODO - Third version -> Accept Taboo solution when it improves solution
+    // TODO -  Create function returns best swap for non taboo
+
     @Override
     public  Optional<Schedule> solve(Instance instance, long deadline){
 
         long start = System.currentTimeMillis();
-        long end = 0;
+        long end;
         Optional<Schedule> current = baseSolver.solve(instance,deadline);
         assert current.isPresent();
 
         // Init best solution
         Schedule bestSolution = current.get();
         Schedule localBestSolution = current.get();
+        Optional<Schedule> tabooSolution;
+        Schedule bestTabooSolution = null;
+        Optional<Schedule> buffer = null;
 
         // Init iterator variable
         int iterator = 0;
@@ -48,6 +52,10 @@ public class Taboo implements Solver {
 
         // Boolean found a local best
         boolean found;
+        boolean foundTabooImprovement = false;
+
+        // Swap for taboo selection
+        Nowicki.Swap selectedSwap = null;
 
         // Create Taboo List
         // No need to add current solution because we only keep in memory the taboo swaps
@@ -59,6 +67,7 @@ public class Taboo implements Solver {
         List<ResourceOrder> neighbors;
 
         while(iterator>=maxIteration){
+
             found = false;
             // Update tabooList
             tabooList.update();
@@ -72,23 +81,55 @@ public class Taboo implements Solver {
             for (ResourceOrder neighbor : neighbors) {
                 // Check if swap is not part of the taboo list
                 if (!tabooList.isPresent(swaps.get(indexSwap))){
-                    // Find best neighbor
-                    if (neighbor.toSchedule().get().makespan() < localBestSolution.makespan()) {
-                        localBestSolution = neighbor.toSchedule().get();
-                        indexSelectedSwap = indexSwap;
-                        found = true;
+                    // Check present
+                    buffer = neighbor.toSchedule();
+                    if (buffer.isPresent()){
+                        // Select best solution
+                        if (buffer.get().makespan() < localBestSolution.makespan()) {
+                            localBestSolution = buffer.get();
+                            indexSelectedSwap = indexSwap;
+                            found = true;
+                        }
                     }
+
                 }
                 indexSwap++;
             }
 
             // Modifications only if a local best is found
             if (found) {
-                // Add selected swap to the tabooList
-                tabooList.addTaboo(tabooTime, swaps.get(indexSelectedSwap));
                 // Check for global best
                 if (localBestSolution.makespan() < bestSolution.makespan()) {
+
+                    // Find best taboo solution
+                    foundTabooImprovement = false;
+                    bestTabooSolution = localBestSolution;
+                    for (Nowicki.Swap swap : tabooList.getSwaps()) {
+                        // Check for non-empty schedule
+                        tabooSolution = swap.generateFrom(new ResourceOrder(localBestSolution)).toSchedule();
+                        // Compare taboo to best
+                        if (tabooSolution.isPresent()){
+
+                            if (tabooSolution.get().makespan() < bestTabooSolution.makespan()){
+                                foundTabooImprovement = true;
+                                selectedSwap = swap;
+                                bestTabooSolution = tabooSolution.get();
+                            }
+
+                        }
+                    }
+
+                }
+
+                // Checking weather best taboo solution is found
+                if (foundTabooImprovement){
+                    bestSolution = bestTabooSolution;
+                    // Add selected swap to the tabooList
+                    tabooList.addTaboo(tabooTime,selectedSwap);
+                }else{
                     bestSolution = localBestSolution;
+                    // Add selected swap to the tabooList
+                    tabooList.addTaboo(tabooTime, swaps.get(indexSelectedSwap));
                 }
             }
 
