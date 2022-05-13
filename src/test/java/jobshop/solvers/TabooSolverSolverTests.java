@@ -1,13 +1,18 @@
 package jobshop.solvers;
 
 
+import jobshop.Instance;
+import jobshop.encodings.Schedule;
 import jobshop.solvers.neighborhood.Nowicki;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.Map;
+import java.util.Optional;
 
-public class TabooSolverTests {
+public class TabooSolverSolverTests {
 
     @Test
     public void listAddTaboo(){
@@ -67,5 +72,15 @@ public class TabooSolverTests {
         Assert.assertFalse(result.isPresent(new Nowicki.Swap(1,1,2)));
         result.addTaboo(5,new Nowicki.Swap(1,1,2));
         Assert.assertTrue(result.isPresent(new Nowicki.Swap(1,2,1)));
+    }
+
+    @Test
+    public void testTabooSolver() throws IOException {
+        Instance instance = Instance.fromFile(Paths.get("instances/aaa3"));
+        Solver baseSolver = new GreedySolver(GreedySolver.Priority.EST_SPT);
+        TabooSolver solver = new TabooSolver(baseSolver,100,5);
+        Optional<Schedule> result = solver.solve(instance,100);
+        Assert.assertTrue(result.isPresent());
+        System.out.println(result.toString());
     }
 }

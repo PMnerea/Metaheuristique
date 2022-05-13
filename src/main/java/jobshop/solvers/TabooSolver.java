@@ -3,14 +3,12 @@ package jobshop.solvers;
 import jobshop.Instance;
 import jobshop.encodings.ResourceOrder;
 import jobshop.encodings.Schedule;
-import jobshop.solvers.neighborhood.Neighborhood;
 import jobshop.solvers.neighborhood.Nowicki;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class Taboo implements Solver {
+public class TabooSolver implements Solver {
 
     final Solver baseSolver;
 
@@ -20,7 +18,7 @@ public class Taboo implements Solver {
 
     final Nowicki neighborhood = new Nowicki();
 
-    public Taboo(Solver solver, int maxIteration,int time){
+    public TabooSolver(Solver solver, int maxIteration, int time){
         this.baseSolver = solver;
         this.maxIteration = maxIteration;
         this.tabooTime = time;
@@ -57,7 +55,7 @@ public class Taboo implements Solver {
         // Swap for taboo selection
         Nowicki.Swap selectedSwap = null;
 
-        // Create Taboo List
+        // Create TabooSolver List
         // No need to add current solution because we only keep in memory the taboo swaps
         TabooList tabooList = new TabooList();
 
@@ -134,7 +132,7 @@ public class Taboo implements Solver {
             }
 
             end = System.currentTimeMillis();
-            if ((end - start)> deadline) {break;}
+            //if ((end - start)> deadline) {break;}
         }
         return Optional.ofNullable(bestSolution);
     }
