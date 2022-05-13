@@ -33,6 +33,7 @@ public interface Solver {
             case "random_srpt": return new GreedyRandomSolver(GreedySolver.Priority.SRPT,20);
             case "random_est_spt": return new GreedyRandomSolver(GreedySolver.Priority.EST_SPT,20);
             case "random_est_lrpt": return new GreedyRandomSolver(GreedySolver.Priority.EST_LRPT,20);
+            case "taboo": return new TabooSolver(new BasicSolver(),5000,5);
             // TODO: add new solvers
             default: throw new RuntimeException("Unknown solver: "+ name);
         }

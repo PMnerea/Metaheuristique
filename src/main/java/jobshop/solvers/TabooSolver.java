@@ -24,8 +24,6 @@ public class TabooSolver implements Solver {
         this.tabooTime = time;
     }
 
-    // TODO -  Create function returns best swap for non taboo
-
     @Override
     public  Optional<Schedule> solve(Instance instance, long deadline){
 
