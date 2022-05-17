@@ -201,7 +201,7 @@ public class Nowicki extends Neighborhood {
         }
         else {
             swapList.add(new Swap(block.machine, block.firstTask, block.firstTask+1));
-            swapList.add(new Swap(block.machine, block.lastTask, block.lastTask-1));
+            swapList.add(new Swap(block.machine, block.lastTask - 1, block.lastTask));
         }
 
         return swapList;

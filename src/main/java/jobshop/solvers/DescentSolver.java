@@ -3,10 +3,8 @@ package jobshop.solvers;
 import jobshop.Instance;
 import jobshop.encodings.ResourceOrder;
 import jobshop.encodings.Schedule;
-import jobshop.encodings.Task;
 import jobshop.solvers.neighborhood.Neighborhood;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -15,7 +13,6 @@ public class DescentSolver implements Solver {
 
     final Neighborhood neighborhood;
     final Solver baseSolver;
-
 
     /** Creates a new descent solver with a given neighborhood and a solver for the initial solution.
      *
@@ -27,12 +24,12 @@ public class DescentSolver implements Solver {
         this.baseSolver = baseSolver;
     }
 
-    // TODO - Implement a descent solver using Nowicki and Smutnicki neighborhood
-    // FIXME - trouver pb algo
     @Override
     public Optional<Schedule> solve(Instance instance, long deadline) {
         // On trouve la solution du solver actuel
         Optional<Schedule> schedule = this.baseSolver.solve(instance, deadline);
+        System.out.println("ici");
+        System.out.println(this.neighborhood.generateNeighbors(new ResourceOrder(schedule.get())));
 
         // Tant qu'on ne trouve pas de voisin améliorant ou de timeout on continue
         boolean foundSolution = false;
