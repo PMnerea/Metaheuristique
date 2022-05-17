@@ -62,7 +62,7 @@ public class TabooSolver implements Solver {
         // Each neighbor is at that same index than its corresponding swap??
         List<ResourceOrder> neighbors;
 
-        while(iterator>=maxIteration){
+        while(iterator<=maxIteration){
 
             found = false;
             // Update tabooList

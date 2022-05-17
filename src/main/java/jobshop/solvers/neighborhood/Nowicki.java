@@ -8,6 +8,7 @@ import jobshop.encodings.Task;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /** Implementation of the Nowicki and Smutnicki neighborhood.
@@ -95,6 +96,7 @@ public class Nowicki extends Neighborhood {
          */
         public ResourceOrder generateFrom(ResourceOrder original) {
             ResourceOrder res = new ResourceOrder(original);
+            System.out.println("[generateFrom] machine : " + this.machine + " t1 : " + this.t1 + " t2 : " + this.t2);
             res.swapTasks(this.machine, this.t1, this.t2);
             return res;
         }
@@ -138,53 +140,34 @@ public class Nowicki extends Neighborhood {
      * @return a list of all the blocks of the critical path.
      */
     public List<Block> blocksOfCriticalPath(ResourceOrder order) {
+        Optional<Schedule> schedule = order.toSchedule();
+        List<Task> criticalPath = schedule.get().criticalPath();
         List<Block> blocks = new ArrayList<>();
-        Block block;
 
-        Instance instance = order.instance;
-        int numMachines = instance.numMachines;
+        int first = -1;
+        int last = -1;
+        int lastMachine = -1;
 
-        Schedule schedule = new Schedule(instance);
-        List<Task> criticalPath = schedule.criticalPath();
-
-        // définition d'entier pour représenter les indices
-        int first;
-        int last;
-
-        // on va regarder pour chaque machine si elle a des blocks
-        for(int m = 0; m<numMachines; m++) {
-            // on met le premier et le dernier à 0 pour commencer à boucler sur une machine
-            first = 0;
-            last = 0;
-
-            // pour chaque tache du chemin critique on va regarder si elle appartient à un block
-            for (int i = 0; i < criticalPath.size() - 1; i++) {
-                // on regarde la tache actuelle et la suivante
-                Task currentTask = criticalPath.get(i);
-                Task nexTask = criticalPath.get(i + 1);
-
-                // Si la tache actuelle appartient a la machine et la taille du block est de 0 alors on l'ajoute
-                if (instance.machine(currentTask) == m && first == 0 && last == 0) {
-                    first = i;
-                    last = i;
+        for (Task t : criticalPath) {
+            if (order.instance.machine(t) == lastMachine) {
+                last++;
+            } else {
+                if (last != first) {
+                    blocks.add(new Block(lastMachine, first, last));
                 }
-                // si l'actuelle et la suivante valent m alors on ajoute la suivante
-                // (l'actuelle est sensee y etre deja)
-                else if (instance.machine(currentTask) == m && instance.machine(nexTask) == m) {
-                    last = i;
+                lastMachine = order.instance.machine(t);
+                for (int i=0; i < order.instance.numJobs; i++) {
+                    if (order.getTaskOfMachine(lastMachine, i).equals(t)) {
+                        first = i;
+                        last = first;
+                        break;
+                    }
                 }
-            }
-
-            // on initialise un block
-            block = new Block(m, first, last);
-
-
-            // si aucun des cas precedent et le block est plus grand que 1 alors on a un block
-            if (block.firstTask < block.lastTask) {
-                blocks.add(block);
             }
         }
-
+        if (last != first) {
+            blocks.add(new Block(lastMachine, first, last));
+        }
         return blocks;
     }
 
@@ -196,12 +179,14 @@ public class Nowicki extends Neighborhood {
     public List<Swap> neighbors(Block block) {
         List<Swap> swapList = new ArrayList<>();
 
-        if (block.lastTask - block.firstTask == 1) {
-            swapList.add(new Swap(block.machine, block.firstTask, block.lastTask));
-        }
-        else {
-            swapList.add(new Swap(block.machine, block.firstTask, block.firstTask+1));
-            swapList.add(new Swap(block.machine, block.lastTask - 1, block.lastTask));
+        if ((block.lastTask - block.firstTask) <= 1) {
+            Swap swap = new Swap(block.machine, block.lastTask, block.firstTask);
+            swapList.add(swap);
+        } else {
+            Swap swapFirst = new Swap(block.machine, block.firstTask+1, block.firstTask);
+            Swap swapLast = new Swap(block.machine, block.lastTask-1, block.lastTask);
+            swapList.add(swapFirst);
+            swapList.add(swapLast);
         }
 
         return swapList;
