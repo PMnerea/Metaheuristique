@@ -144,18 +144,27 @@ public class Nowicki extends Neighborhood {
         List<Task> criticalPath = schedule.get().criticalPath();
         List<Block> blocks = new ArrayList<>();
 
+        // Variables pour définir les blocks
         int first = -1;
         int last = -1;
         int lastMachine = -1;
 
+        // Pour chaque tâche du chemin critique
         for (Task t : criticalPath) {
+            // Si la tâche évaluée fait partie du block actuel on l'ajoute
             if (order.instance.machine(t) == lastMachine) {
                 last++;
-            } else {
+            }
+            // Sinon on va regarder si elle peut être la première tâche d'un block
+            else {
+                // Si le block construit précédement est plus grand que 1 alors c'est un block et on l'ajoute
                 if (last != first) {
                     blocks.add(new Block(lastMachine, first, last));
                 }
+                // On défini la machine étudiée à celle de la tâche actuelle
                 lastMachine = order.instance.machine(t);
+                // Puis on va regarder chaque job jusqu'à trouver un job qui utilise la même machine
+                // Si c'est le cas on défini un nouveau block et on arrête la boucle
                 for (int i=0; i < order.instance.numJobs; i++) {
                     if (order.getTaskOfMachine(lastMachine, i).equals(t)) {
                         first = i;
