@@ -74,7 +74,7 @@ public class Nowicki extends Neighborhood {
         public final int t2;
 
         /** Creates a new swap of two tasks. */
-        Swap(int machine, int t1, int t2) {
+        public Swap(int machine, int t1, int t2) {
             this.machine = machine;
             if (t1 < t2) {
                 this.t1 = t1;
@@ -85,6 +85,10 @@ public class Nowicki extends Neighborhood {
             }
         }
 
+        @Override
+        public String toString() {
+            return "Machine: " + machine + " Task1: " + t1 + " Task2: " + t2;
+        }
 
         /** Creates a new ResourceOrder order that is the result of performing the swap in the original ResourceOrder.
          *  The original ResourceOrder MUST NOT be modified by this operation.
@@ -114,7 +118,6 @@ public class Nowicki extends Neighborhood {
     public List<ResourceOrder> generateNeighbors(ResourceOrder current) {
         // convert the list of swaps into a list of neighbors (function programming FTW)
         return allSwaps(current).stream().map(swap -> swap.generateFrom(current)).collect(Collectors.toList());
-
     }
 
     /** Generates all swaps of the given ResourceOrder.
@@ -198,7 +201,7 @@ public class Nowicki extends Neighborhood {
         }
         else {
             swapList.add(new Swap(block.machine, block.firstTask, block.firstTask+1));
-            swapList.add(new Swap(block.machine, block.lastTask, block.lastTask-1));
+            swapList.add(new Swap(block.machine, block.lastTask - 1, block.lastTask));
         }
 
         return swapList;

@@ -20,9 +20,9 @@ public class GreedyRandomSolver extends GreedySolver{
     /**
      * Creates a new random greedy solver that will use the given priority.
      */
-    public GreedyRandomSolver(Priority p,int r) {
+    public GreedyRandomSolver(Priority p,int repeat) {
         super(p);
-        this.repeat = r;
+        this.repeat = repeat;
     }
 
     public ArrayList<Task> extractDoable(ArrayList<Task> doableTasks){
