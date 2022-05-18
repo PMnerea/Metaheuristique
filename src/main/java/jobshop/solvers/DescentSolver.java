@@ -28,7 +28,7 @@ public class DescentSolver implements Solver {
     public Optional<Schedule> solve(Instance instance, long deadline) {
         // On trouve la solution du solver actuel
         Optional<Schedule> schedule = this.baseSolver.solve(instance, deadline);
-        System.out.println("ici");
+//        System.out.println("ici");
         System.out.println(this.neighborhood.generateNeighbors(new ResourceOrder(schedule.get())));
 
         // Tant qu'on ne trouve pas de voisin améliorant ou de timeout on continue

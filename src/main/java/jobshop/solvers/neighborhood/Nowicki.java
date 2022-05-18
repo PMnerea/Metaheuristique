@@ -96,7 +96,7 @@ public class Nowicki extends Neighborhood {
          */
         public ResourceOrder generateFrom(ResourceOrder original) {
             ResourceOrder res = new ResourceOrder(original);
-            System.out.println("[generateFrom] machine : " + this.machine + " t1 : " + this.t1 + " t2 : " + this.t2);
+//            System.out.println("[generateFrom] machine : " + this.machine + " t1 : " + this.t1 + " t2 : " + this.t2);
             res.swapTasks(this.machine, this.t1, this.t2);
             return res;
         }
