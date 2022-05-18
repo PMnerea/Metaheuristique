@@ -1,5 +1,7 @@
 package jobshop;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
 import java.io.PrintStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -84,19 +86,30 @@ public class Main {
         // average distance to best known result for each solver
         float[] avg_distances = new float[solversToTest.size()];
 
+
+
         try {
+            BufferedWriter f_writer
+                    = new BufferedWriter(new FileWriter(
+                    "./results.csv"));
             // header of the result table :
             //   - solver names (first line)
             //   - name of each column (second line)
             output.print(  "                         ");
-            for(String s : solversToTest)
+            for(String s : solversToTest) {
                 output.printf("%-30s", s);
+            }
+
             output.println();
             output.print("instance size  best      ");
+            f_writer.write("instance,size,best,");
             for(String s : solversToTest) {
                 output.print("runtime makespan ecart        ");
             }
+            f_writer.write("runtime,makespan,ecart");
+            if (solversToTest.size()==1)f_writer.write(","+solversToTest.get(0));
             output.println();
+            f_writer.write("\n");
 
             // for all instances, load it from f
             for(String instanceName : instances) {
@@ -109,6 +122,7 @@ public class Main {
 
                 // print some general statistics on the instance
                 output.printf("%-8s %-5s %4d      ",instanceName, instance.numJobs +"x"+instance.numTasks, bestKnown);
+                f_writer.write(instanceName+","+instance.numJobs+"x"+instance.numTasks+","+bestKnown+",");
 
                 // run all selected solvers on the instance and print the results
                 for(int solverId = 0 ; solverId < solvers.size() ; solverId++) {
@@ -139,6 +153,7 @@ public class Main {
                     avg_distances[solverId] += dist / (float) instances.size();
 
                     output.printf("%7d %8s %5.1f        ", runtime, makespan, dist);
+                    f_writer.write(runtime+","+makespan+","+dist+"\n");
                     output.flush();
                 }
                 output.println();
@@ -150,6 +165,8 @@ public class Main {
             for(int solverId = 0 ; solverId < solversToTest.size() ; solverId++) {
                 output.printf("%7.1f %8s %5.1f        ", avg_runtimes[solverId], "-", avg_distances[solverId]);
             }
+            f_writer.flush();
+            f_writer.close();
 
 
 

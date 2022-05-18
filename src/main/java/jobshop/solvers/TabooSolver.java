@@ -130,7 +130,7 @@ public class TabooSolver implements Solver {
             }
 
             end = System.currentTimeMillis();
-            //if ((end - start)> deadline) {break;}
+            if ((end - start)> deadline) {break;}
         }
         return Optional.ofNullable(bestSolution);
     }
